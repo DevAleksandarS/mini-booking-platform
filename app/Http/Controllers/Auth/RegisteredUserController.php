@@ -31,7 +31,21 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    $user = User::withTrashed()->where('email', $value)->first();
+                    if ($user?->trashed()) {
+                        $fail('Account with same email was previously used but deleted. Please contact support.');
+                    } elseif ($user) {
+                        $fail('The email has already been taken.');
+                    }
+                },
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
