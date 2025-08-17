@@ -10,41 +10,41 @@ Route::get('/', function () {
 })->name('home');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    })->name('dashboard');
 
     Route::get('/reservations', function () {
         return view('reservations');
-    })->middleware(['auth', 'verified'])->name('reservations');
+    })->name('reservations');
 
     Route::get('/facilities', function () {
         return view('facilities');
-    })->middleware(['auth', 'verified'])->name('facilities');
+    })->name('facilities');
 
     Route::get('/reviews', function () {
         return view('reviews');
-    })->middleware(['auth', 'verified'])->name('reviews');
+    })->name('reviews');
 
     Route::get('/users', function () {
         return view('users');
-    })->middleware(['auth', 'verified'])->name('users');
+    })->name('users');
 });
 
 // User Routes
-Route::name('user.')->group(function () {
+Route::name('user.')->middleware(['auth', 'verified', 'role:user'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    })->name('dashboard');
 
     Route::get('/reservations', function () {
         return view('reservations');
-    })->middleware(['auth', 'verified'])->name('reservations');
+    })->name('reservations');
 
     Route::get('/reviews', function () {
         return view('reviews');
-    })->middleware(['auth', 'verified'])->name('reviews');
+    })->name('reviews');
 });
 
 
