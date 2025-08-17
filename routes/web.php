@@ -6,12 +6,47 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
+})->name('home');
+
+// Admin Routes
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
+
+    Route::get('/reservations', function () {
+        return view('reservations');
+    })->middleware(['auth', 'verified'])->name('reservations');
+
+    Route::get('/facilities', function () {
+        return view('facilities');
+    })->middleware(['auth', 'verified'])->name('facilities');
+
+    Route::get('/reviews', function () {
+        return view('reviews');
+    })->middleware(['auth', 'verified'])->name('reviews');
+
+    Route::get('/users', function () {
+        return view('users');
+    })->middleware(['auth', 'verified'])->name('users');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// User Routes
+Route::name('user.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');
+
+    Route::get('/reservations', function () {
+        return view('reservations');
+    })->middleware(['auth', 'verified'])->name('reservations');
+
+    Route::get('/reviews', function () {
+        return view('reviews');
+    })->middleware(['auth', 'verified'])->name('reviews');
+});
+
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
