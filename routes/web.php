@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Location;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -30,6 +31,12 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     Route::get('/users', function () {
         return view('users');
     })->name('users');
+
+    Route::get('/locations', function () {
+        $locations = Location::paginate(10);
+
+        return view('admin.location', compact('locations'));
+    })->name('locations');
 });
 
 // User Routes
@@ -71,3 +78,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+require __DIR__ . '/location.php';

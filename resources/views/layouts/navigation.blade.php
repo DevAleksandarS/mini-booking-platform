@@ -26,6 +26,9 @@
                             <x-nav-link :href="route('admin.facilities')" :active="request()->routeIs('admin.facilities')">
                                 {{ __('Facilities') }}
                             </x-nav-link>
+                            <x-nav-link :href="route('admin.locations')" :active="request()->routeIs('admin.locations')">
+                                {{ __('Locations') }}
+                            </x-nav-link>
                             <x-nav-link :href="route('admin.reviews')" :active="request()->routeIs('admin.reviews')">
                                 {{ __('Reviews') }}
                             </x-nav-link>
@@ -88,7 +91,7 @@
 
                                 <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
-                                                                                                        this.closest('form').submit();">
+                                                                                                            this.closest('form').submit();">
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
@@ -130,6 +133,9 @@
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.facilities')" :active="request()->routeIs('admin.facilities')">
                         {{ __('Facilities') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.locations')" :active="request()->routeIs('admin.locations')">
+                        {{ __('Locations') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('admin.reviews')" :active="request()->routeIs('admin.reviews')">
                         {{ __('Reviews') }}
@@ -180,7 +186,7 @@
 
                         <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
-                                                                                            this.closest('form').submit();">
+                                                                                                this.closest('form').submit();">
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>
