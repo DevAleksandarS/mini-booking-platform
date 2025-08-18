@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('home');
+    $facilities = Facility::with('location')->paginate(perPage: 12);
+
+    return view('home', compact('facilities'));
 })->name('home');
 
 Route::get('/facility/{id}', function ($id) {
