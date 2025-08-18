@@ -1,24 +1,39 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Home') }}
+        </h2>
+    </x-slot>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    @if($facilities->count())
+                        <div class="grid grid-cols-4 gap-5">
+                            @foreach($facilities as $facility)
+                                <a href="{{ route('facility', ['id' => $facility->id]) }}">
+                                    <img src="{{ Storage::url($facility->image) }}" alt="{{ $facility->name }}" class="w-36">
+                                    <p>Name: {{ $facility->name }}</p>
+                                    <p>Location: {{ $facility->location->city }}, {{ $facility->location->country }}</p>
+                                    <p>Price: ${{ $facility->price }}</p>
+                                    <p>Number of beds: {{ $facility->number_of_beds }}</p>
+                                    <p>Max people: {{ $facility->max_people }}</p>
+                                    <p>Description: {{ $facility->description }}</p>
+                                </a>
+                            @endforeach
+                        </div>
 
-    <title>Laravel</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="">
-    <div class="min-h-screen bg-gray-100">
-        @include('layouts.navigation')
+                        @if($facilities->hasPages())
+                            <div class="mt-4">
+                                {{ $facilities->links() }}
+                            </div>
+                        @endif
+                    @else
+                        <p>No facilities found.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-
-</html>
+</x-app-layout>

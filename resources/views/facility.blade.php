@@ -1,0 +1,133 @@
+<x-app-layout>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <img src="{{ Storage::url($facility->image) }}" alt="{{ $facility->name }}" class="w-36">
+                    <!-- TODO: Update image-->
+
+                    <p>Name: {{ $facility->name }}</p>
+                    <p>Location: {{ $facility->location->city }}, {{ $facility->location->country }}</p>
+                    <p>Price: ${{ $facility->price }}</p>
+                    <p>Number of beds: {{ $facility->number_of_beds }}</p>
+                    <p>Max people: {{ $facility->max_people }}</p>
+                    <p>Description: {{ $facility->description }}</p>
+
+                    <div class="mt-4">
+                        @auth
+                            @if(auth()->user()->role === 'admin')
+                                <form action="{{ route('facility.destroy', $facility) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 text-white px-2 rounded"
+                                        onclick="return confirm('Are you sure you want to delete this facility?')">
+                                        Delete
+                                    </button>
+                                </form>
+
+                                <button type="button" class="bg-blue-700 text-white px-2 rounded" data-bs-toggle="modal"
+                                    data-bs-target="#facilityPopup">
+                                    Update
+                                </button>
+                            @else
+                            @endif
+                        @endauth
+
+                        @guest
+                            <a href="{{ route('login') }}">Login to reserve</a>
+                        @endguest
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="facilityPopup" tabindex="-1" aria-labelledby="facilityPopupLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="facilityPopupLabel">Update
+                        Facility</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('facility.update', $facility) }}" method="POST"
+                        id="updateFacilityForm{{ $facility->id }}">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="mb-3">
+                            <label for="name{{ $facility->id }}" class="form-label">Name</label>
+                            <input type="text" id="name{{ $facility->id }}" name="name"
+                                value="{{ old('name', $facility->name) }}"
+                                class="form-control @error('name') is-invalid @enderror" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description{{ $facility->id }}" class="form-label">Description</label>
+                            <textarea id="description{{ $facility->id }}" name="description" required
+                                class="form-control @error('description') is-invalid @enderror">{{ old('description', $facility->description) }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location_id{{ $facility->id }}" class="form-label">Location</label>
+                            <select id="location_id{{ $facility->id }}" name="location_id" required
+                                class="form-select @error('location_id') is-invalid @enderror">
+                                <option value="">Select Location</option>
+                                @foreach($locations as $location)
+                                    <option value="{{ $location->id }}" {{ old('location_id', $facility->location_id) == $location->id ? 'selected' : '' }}>
+                                        {{ $location->city }}, {{ $location->country }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('location_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="price{{ $facility->id }}" class="form-label">Price per night</label>
+                            <input type="number" id="price{{ $facility->id }}" name="price" step="0.01" min="1"
+                                value="{{ old('price', $facility->price) }}"
+                                class="form-control @error('price') is-invalid @enderror" required>
+                            @error('price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="number_of_beds{{ $facility->id }}" class="form-label">Number of Beds</label>
+                            <input type="number" id="number_of_beds{{ $facility->id }}" name="number_of_beds" min="1"
+                                value="{{ old('number_of_beds', $facility->number_of_beds) }}"
+                                class="form-control @error('number_of_beds') is-invalid @enderror" required>
+                            @error('number_of_beds')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="max_people{{ $facility->id }}" class="form-label">Max People</label>
+                            <input type="number" id="max_people{{ $facility->id }}" name="max_people" min="1"
+                                value="{{ old('max_people', $facility->max_people) }}"
+                                class="form-control @error('max_people') is-invalid @enderror" required>
+                            @error('max_people')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="updateFacilityForm{{ $facility->id }}">Save
+                        changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
