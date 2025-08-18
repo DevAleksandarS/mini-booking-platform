@@ -21,12 +21,25 @@ class LocationController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'city' => 'required|string',
-            'country' => 'required|string',
+            'city' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s]+$/'
+            ],
+            'country' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s]+$/'
+            ],
+        ], [
+            'city.regex' => 'City cant have numbers and special characters in it.',
+            'country.regex' => 'Country cant have numbers and special characters in it.',
         ]);
 
-        $location = Location::create($data);
-        return response()->json($location, 201);
+        Location::create($data);
+        return redirect()->route('admin.locations')->with('success', 'Location added successfully.');
     }
 
     /**
@@ -43,12 +56,28 @@ class LocationController extends Controller
     public function update(Request $request, Location $location)
     {
         $data = $request->validate([
-            'city' => 'sometimes|required|string',
-            'country' => 'sometimes|required|string',
+            'city' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s]+$/'
+            ],
+            'country' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s]+$/'
+            ],
+        ], [
+            'city.regex' => 'City cant have numbers and special characters in it.',
+            'country.regex' => 'Country cant have numbers and special characters in it.',
         ]);
 
+        // TODO: FIX THIS
+        $page = $request->query('page') ?? 1;
+
         $location->update($data);
-        return $location;
+        return redirect()->route('admin.locations', ['page' => $page])->with('success', 'Location updated successfully.');
     }
 
     /**
@@ -57,6 +86,7 @@ class LocationController extends Controller
     public function destroy(Location $location)
     {
         $location->delete();
-        return response()->noContent();
+
+        return redirect()->route('admin.locations')->with('success', 'Location deleted successfully.');
     }
 }
