@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\Facility;
 use App\Models\Location;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,13 @@ use Illuminate\Http\Request;
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+Route::get('/facility/{id}', function ($id) {
+    $facility = Facility::with('location')->findOrFail($id);
+    $locations = Location::all();
+
+    return view('facility', compact('facility', 'locations'));
+})->name('facility');
 
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
@@ -21,7 +29,10 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     })->name('reservations');
 
     Route::get('/facilities', function () {
-        return view('facilities');
+        $facilities = Facility::paginate(10);
+        $locations = Location::all();
+
+        return view('admin.facility', compact('facilities', 'locations'));
     })->name('facilities');
 
     Route::get('/reviews', function () {
@@ -79,3 +90,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/location.php';
+require __DIR__ . '/facility.php';
