@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Models\Facility;
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -42,7 +43,9 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     })->name('reviews');
 
     Route::get('/users', function () {
-        return view('users');
+        $users = User::where('id', '!=', auth()->id())->paginate(10);
+
+        return view('admin.users', compact('users'));
     })->name('users');
 
     Route::get('/locations', function () {
@@ -93,3 +96,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__ . '/auth.php';
 require __DIR__ . '/location.php';
 require __DIR__ . '/facility.php';
+require __DIR__ . '/users.php';
