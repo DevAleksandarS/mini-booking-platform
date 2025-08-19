@@ -1,11 +1,9 @@
 <?php
 
-use App\Http\Controllers\LocationController;
+use App\Http\Controllers\Api\LocationController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix("location")->middleware(['auth', 'verified'])->group(function () {
-    Route::get('/', [LocationController::class, 'index'])->name('location.index');
-
+Route::prefix("api/location")->middleware(['auth', 'verified'])->group(function () {
     Route::post('/', [LocationController::class, 'store'])->middleware(['role:admin'])->name('location.store');
 
     Route::get('/{location}', [LocationController::class, 'show'])->name('location.show');
