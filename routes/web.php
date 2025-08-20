@@ -33,7 +33,20 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     })->name('dashboard');
 
     Route::get('/reservations', function () {
-        return view('reservations');
+        $reservations = Reservation::with('facility')->with('user')
+            ->where(function ($query) {
+                $query->whereNotNull('confirmed_at')
+                    ->orWhere(function ($q) {
+                        $q->whereNull('confirmed_at')
+                            ->where(function ($sub) {
+                                $sub->where('confirmation_expires_at', '>', now());
+                            });
+                    });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.reservations', compact('reservations'));
     })->name('reservations');
 
     Route::get('/facilities', function () {
