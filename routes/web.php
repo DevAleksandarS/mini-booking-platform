@@ -19,8 +19,16 @@ Route::get('/', function () {
 Route::get('/facility/{id}', function ($id) {
     $facility = Facility::with('location')->findOrFail($id);
     $locations = Location::all();
+    $reviews = $facility->reviews()
+        ->where('user_id', '!=', auth()->id())
+        ->with('user')
+        ->latest()
+        ->paginate(5);
+    $my_review = $facility->reviews()
+        ->where('user_id', auth()->id())
+        ->first();
 
-    return view('facility', compact('facility', 'locations'));
+    return view('facility', compact('facility', 'locations', 'reviews', 'my_review'));
 })->name('facility');
 
 Route::get('/reservation/confirm/{id}/{token}', [ReservationController::class, 'confirm'])
@@ -130,3 +138,4 @@ require __DIR__ . '/location.php';
 require __DIR__ . '/facility.php';
 require __DIR__ . '/users.php';
 require __DIR__ . '/reservation.php';
+require __DIR__ . '/review.php';

@@ -36,7 +36,7 @@
                                     <input type="hidden" name="facility_id" value="{{ $facility->id }}">
 
                                     <div class="mb-4">
-                                        <label for="start_date" class="block mb-1 font-medium">Start Date</label>
+                                        <label for="start_date" class="block mb-1">Start Date</label>
                                         <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}"
                                             class="w-full border rounded px-3 py-2" required>
                                         @error('start_date')
@@ -45,7 +45,7 @@
                                     </div>
 
                                     <div class="mb-4">
-                                        <label for="end_date" class="block mb-1 font-medium">End Date</label>
+                                        <label for="end_date" class="block mb-1">End Date</label>
                                         <input type="date" name="end_date" id="end_date" class="w-full border rounded px-3 py-2"
                                             value="{{ old('end_date') }}" required>
                                         @error('end_date')
@@ -69,12 +69,136 @@
                                         {{ session('error') }}
                                     </div>
                                 @endif
+
+                                @if($my_review)
+                                    <div class="mt-8">
+                                        <h3 class="font-medium">My review:</h3>
+
+                                        <div class="mt-2">
+                                            <p>Rated {{ $my_review->rating }}/5</p>
+                                            <p>{{ $my_review->comment }}</p>
+
+                                            <form action="{{ route('review.destroy', $my_review) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="bg-red-500 text-white px-2 rounded"
+                                                    onclick="return confirm('Are you sure you want to delete your review?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+
+                                            <button type="button" class="bg-blue-700 text-white px-2 rounded" data-bs-toggle="modal"
+                                                data-bs-target="#reviewPopup">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal fade" id="reviewPopup" tabindex="-1" aria-labelledby="reviewPopupLabel"
+                                        aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="reviewPopupLabel">Update
+                                                        Review</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form class="mt-4" action="{{ route('review.update', $my_review) }}"
+                                                        method="POST" id="updateReviewForm{{ $my_review->id }}">
+                                                        @csrf
+                                                        @method('PUT')
+
+                                                        <div class="mb-4">
+                                                            <label for="rating">Rating:</label>
+                                                            <select class="w-full border rounded px-3 py-" name="rating" id="rating"
+                                                                required>
+                                                                <option value="">Select rating</option>
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    <option value="{{ $i }}" {{ $my_review->rating == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                                                @endfor
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="mb-4">
+                                                            <label for="comment">Comment:</label>
+                                                            <textarea class="w-full border rounded px-3 py-" name="comment"
+                                                                id="comment" required>{{ $my_review->comment }}</textarea>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary"
+                                                        form="updateReviewForm{{ $my_review->id }}">Save
+                                                        changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <form class="mt-4" action="{{ route('review.store', $facility) }}" method="POST">
+                                        @csrf
+                                        <div class="mb-4">
+                                            <label for="rating">Rating:</label>
+                                            <select class="w-full border rounded px-3 py-" name="rating" id="rating" required>
+                                                <option value="">Select rating</option>
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    <option value="{{ $i }}">{{ $i }}</option>
+                                                @endfor
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label for="comment">Comment:</label>
+                                            <textarea class="w-full border rounded px-3 py-" name="comment" id="comment"
+                                                required></textarea>
+                                        </div>
+
+                                        <button class="bg-blue-700 text-white px-2 rounded" type="submit">Submit Review</button>
+                                    </form>
+                                @endif
                             @endif
                         @endauth
 
                         @guest
                             <a href="{{ route('login') }}">Login to reserve</a>
                         @endguest
+
+                        <div class="mt-8">
+                            <h3 class="font-medium">Reviews:</h3>
+
+                            @if($reviews->count())
+                                @foreach($reviews as $review)
+                                    <div class="mt-2">
+                                        <p>{{ $review->user->name }} rated {{ $review->rating }}/5</p>
+                                        <p>{{ $review->comment }}</p>
+                                        @auth
+                                            @if(auth()->user()->role === 'admin')
+                                                <form action="{{ route('review.destroy', $review) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+
+                                                    <button type="submit" class="bg-red-500 text-white px-2 rounded"
+                                                        onclick="return confirm('Are you sure you want to delete this review?')">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endauth
+                                    </div>
+                                @endforeach
+
+                                <div class="mt-4">
+                                    {{ $reviews->links() }}
+                                </div>
+                            @else
+                                <p>No reviews found.</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

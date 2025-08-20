@@ -22,6 +22,11 @@ class Facility extends Model
 
     public function location()
     {
-        return $this->belongsTo(\App\Models\Location::class);
+        return $this->belongsTo(Location::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }
