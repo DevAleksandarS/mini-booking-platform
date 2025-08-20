@@ -32,7 +32,7 @@ class LocationController extends Controller
         ]);
 
         Location::create($data);
-        return redirect()->route('admin.locations')->with('success', 'Location added successfully.');
+        return redirect()->back()->with('success', 'Location added successfully.');
     }
 
     /**
@@ -66,11 +66,8 @@ class LocationController extends Controller
             'country.regex' => 'Country cant have numbers and special characters in it.',
         ]);
 
-        // TODO: FIX THIS
-        $page = $request->query('page') ?? 1;
-
         $location->update($data);
-        return redirect()->route('admin.locations', ['page' => $page])->with('success', 'Location updated successfully.');
+        return redirect()->back()->with('success', 'Location updated successfully.');
     }
 
     /**
