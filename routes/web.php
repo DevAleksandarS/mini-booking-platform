@@ -11,9 +11,38 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    $facilities = Facility::with('location')->paginate(perPage: 12);
+    $facilities = Facility::with('location');
 
-    return view('home', compact('facilities'));
+    if ($min = request('price_min')) {
+        $facilities->where('price', '>=', $min);
+    }
+    if ($max = request('price_max')) {
+        $facilities->where('price', '<=', $max);
+    }
+
+    if ($maxPeople = request('max_people')) {
+        $facilities->where('max_people', '>=', $maxPeople);
+    }
+
+    if ($locationId = request('location_id')) {
+        $facilities->where('location_id', $locationId);
+    }
+
+    if ($sort = request('sort')) {
+        match ($sort) {
+            'name_asc' => $facilities->orderBy('name', 'asc'),
+            'name_desc' => $facilities->orderBy('name', 'desc'),
+            'price_asc' => $facilities->orderBy('price', 'asc'),
+            'price_desc' => $facilities->orderBy('price', 'desc'),
+            default => null,
+        };
+    }
+
+    $facilities = $facilities->paginate(12)->withQueryString();
+
+    $locations = Location::all();
+
+    return view('home', compact('facilities', 'locations'));
 })->name('home');
 
 Route::get('/facility/{id}', function ($id) {

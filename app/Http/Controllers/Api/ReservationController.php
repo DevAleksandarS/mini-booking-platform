@@ -94,6 +94,6 @@ class ReservationController extends Controller
 
         $reservation->delete();
 
-        return redirect()->route('user.reservations')->with('success', 'Reservation canceled successfully.');
+        return redirect()->back()->with('success', 'Reservation canceled successfully.');
     }
 }
