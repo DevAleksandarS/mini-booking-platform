@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\ReservationCreatedMail;
 use App\Models\Reservation;
+use App\Models\User;
+use App\Notifications\ReservationApproved;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Mail;
 use Str;
 
@@ -78,6 +81,10 @@ class ReservationController extends Controller
             'confirmation_token' => null,
             'confirmation_expires_at' => null,
         ]);
+
+        $admins = User::where('role', 'admin')->get();
+
+        Notification::send($admins, new ReservationApproved($reservation));
 
         return redirect()->route('home')->with('success', 'Reservation confirmed successfully!');
     }
