@@ -61,8 +61,7 @@ class ReviewController extends Controller
     public function destroy(Review $review)
     {
         if ($review->user_id !== auth()->id() && auth()->user()->role === 'user') {
-            return redirect()->route('user.reservations')
-                ->with('error', 'You are not authorized to delete this review.');
+            return redirect()->back()->with('error', 'You are not authorized to delete this review.');
         }
 
         $review->delete();

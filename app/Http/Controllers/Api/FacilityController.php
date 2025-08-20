@@ -46,12 +46,12 @@ class FacilityController extends Controller
         $facility->update($data);
 
         // TODO: Update this to return to updated facility
-        return redirect()->route('admin.facilities')->with('success', 'Facility added successfully.');
+        return redirect()->route('admin.facilities')->with('success', 'Facility updated successfully.');
     }
 
     public function destroy(Facility $facility)
     {
         $facility->delete();
-        return redirect()->route('admin.facilities')->with('success', 'Facility added successfully.');
+        return redirect()->route('admin.facilities')->with('success', 'Facility deleted successfully.');
     }
 }
