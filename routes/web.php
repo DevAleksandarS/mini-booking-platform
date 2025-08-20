@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Facility;
 use App\Models\Location;
+use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +23,9 @@ Route::get('/facility/{id}', function ($id) {
     return view('facility', compact('facility', 'locations'));
 })->name('facility');
 
+Route::get('/reservation/confirm/{id}/{token}', [ReservationController::class, 'confirm'])
+    ->name('reservation.confirm');
+
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
@@ -28,7 +33,20 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('ad
     })->name('dashboard');
 
     Route::get('/reservations', function () {
-        return view('reservations');
+        $reservations = Reservation::with('facility')->with('user')
+            ->where(function ($query) {
+                $query->whereNotNull('confirmed_at')
+                    ->orWhere(function ($q) {
+                        $q->whereNull('confirmed_at')
+                            ->where(function ($sub) {
+                                $sub->where('confirmation_expires_at', '>', now());
+                            });
+                    });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('admin.reservations', compact('reservations'));
     })->name('reservations');
 
     Route::get('/facilities', function () {
@@ -62,7 +80,21 @@ Route::name('user.')->middleware(['auth', 'verified', 'role:user'])->group(funct
     })->name('dashboard');
 
     Route::get('/reservations', function () {
-        return view('reservations');
+        $reservations = Reservation::with('facility')
+            ->where('user_id', auth()->id())
+            ->where(function ($query) {
+                $query->whereNotNull('confirmed_at')
+                    ->orWhere(function ($q) {
+                        $q->whereNull('confirmed_at')
+                            ->where(function ($sub) {
+                                $sub->where('confirmation_expires_at', '>', now());
+                            });
+                    });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('user.reservations', compact('reservations'));
     })->name('reservations');
 
     Route::get('/reviews', function () {
@@ -97,3 +129,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/location.php';
 require __DIR__ . '/facility.php';
 require __DIR__ . '/users.php';
+require __DIR__ . '/reservation.php';
