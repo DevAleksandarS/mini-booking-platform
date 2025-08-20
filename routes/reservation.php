@@ -9,6 +9,5 @@ Route::prefix("api/reservation")->middleware(['auth', 'verified'])->group(functi
         ->name('reservation.store');
 
     Route::delete('/{reservation}', [ReservationController::class, 'destroy'])
-        ->middleware('role:user|admin')
         ->name('reservation.destroy');
 });

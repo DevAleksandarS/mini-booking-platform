@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Facility;
 use App\Models\Location;
+use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -66,7 +67,21 @@ Route::name('user.')->middleware(['auth', 'verified', 'role:user'])->group(funct
     })->name('dashboard');
 
     Route::get('/reservations', function () {
-        return view('reservations');
+        $reservations = Reservation::with('facility')
+            ->where('user_id', auth()->id())
+            ->where(function ($query) {
+                $query->whereNotNull('confirmed_at')
+                    ->orWhere(function ($q) {
+                        $q->whereNull('confirmed_at')
+                            ->where(function ($sub) {
+                                $sub->where('confirmation_expires_at', '>', now());
+                            });
+                    });
+            })
+            ->latest()
+            ->paginate(10);
+
+        return view('user.reservations', compact('reservations'));
     })->name('reservations');
 
     Route::get('/reviews', function () {

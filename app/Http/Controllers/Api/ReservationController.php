@@ -85,8 +85,15 @@ class ReservationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Reservation $reservation)
     {
-        //
+        if ($reservation->user_id !== auth()->id() && auth()->user()->role === 'user') {
+            return redirect()->route('user.reservations')
+                ->with('error', 'You are not authorized to cancel this reservation.');
+        }
+
+        $reservation->delete();
+
+        return redirect()->route('user.reservations')->with('success', 'Reservation canceled successfully.');
     }
 }
