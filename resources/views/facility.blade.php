@@ -58,18 +58,6 @@
                                     </button>
                                 </form>
 
-                                @if(session('success'))
-                                    <div class="mt-4">
-                                        {{ session('success') }}
-                                    </div>
-                                @endif
-
-                                @if(session('error'))
-                                    <div class="mt-4">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
-
                                 @if($my_review)
                                     <div class="mt-8">
                                         <h3 class="font-medium">My review:</h3>
