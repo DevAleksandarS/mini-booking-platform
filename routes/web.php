@@ -97,3 +97,4 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/location.php';
 require __DIR__ . '/facility.php';
 require __DIR__ . '/users.php';
+require __DIR__ . '/reservation.php';

@@ -30,6 +30,45 @@
                                     Update
                                 </button>
                             @else
+                                <form action="{{ route('reservation.store') }}" method="POST">
+                                    @csrf
+
+                                    <input type="hidden" name="facility_id" value="{{ $facility->id }}">
+
+                                    <div class="mb-4">
+                                        <label for="start_date" class="block mb-1 font-medium">Start Date</label>
+                                        <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}"
+                                            class="w-full border rounded px-3 py-2" required>
+                                        @error('start_date')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="end_date" class="block mb-1 font-medium">End Date</label>
+                                        <input type="date" name="end_date" id="end_date" class="w-full border rounded px-3 py-2"
+                                            value="{{ old('end_date') }}" required>
+                                        @error('end_date')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <button type="submit" class="bg-blue-700 text-white px-2 rounded">
+                                        Reserve
+                                    </button>
+                                </form>
+
+                                @if(session('success'))
+                                    <div class="mt-4">
+                                        {{ session('success') }}
+                                    </div>
+                                @endif
+
+                                @if(session('error'))
+                                    <div class="mt-4">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
                             @endif
                         @endauth
 
