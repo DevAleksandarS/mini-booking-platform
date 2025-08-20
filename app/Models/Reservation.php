@@ -14,6 +14,9 @@ class Reservation extends Model
         'user_id',
         'start_date',
         'end_date',
+        'confirmation_token',
+        'confirmed_at',
+        'confirmation_expires_at',
     ];
 
     public function facility()

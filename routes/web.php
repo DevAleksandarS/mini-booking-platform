@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Facility;
 use App\Models\Location;
@@ -20,6 +21,9 @@ Route::get('/facility/{id}', function ($id) {
 
     return view('facility', compact('facility', 'locations'));
 })->name('facility');
+
+Route::get('/reservation/confirm/{id}/{token}', [ReservationController::class, 'confirm'])
+    ->name('reservation.confirm');
 
 // Admin Routes
 Route::prefix('admin')->middleware(['auth', 'verified', 'role:admin'])->name('admin.')->group(function () {
