@@ -128,26 +128,28 @@
                                         </div>
                                     </div>
                                 @else
-                                    <form class="mt-4" action="{{ route('review.store', $facility) }}" method="POST">
-                                        @csrf
-                                        <div class="mb-4">
-                                            <label for="rating">Rating:</label>
-                                            <select class="w-full border rounded px-3 py-" name="rating" id="rating" required>
-                                                <option value="">Select rating</option>
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <option value="{{ $i }}">{{ $i }}</option>
-                                                @endfor
-                                            </select>
-                                        </div>
+                                    @if($has_ended_reservation)
+                                        <form class="mt-4" action="{{ route('review.store', $facility) }}" method="POST">
+                                            @csrf
+                                            <div class="mb-4">
+                                                <label for="rating">Rating:</label>
+                                                <select class="w-full border rounded px-3 py-" name="rating" id="rating" required>
+                                                    <option value="">Select rating</option>
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <option value="{{ $i }}">{{ $i }}</option>
+                                                    @endfor
+                                                </select>
+                                            </div>
 
-                                        <div class="mb-4">
-                                            <label for="comment">Comment:</label>
-                                            <textarea class="w-full border rounded px-3 py-" name="comment" id="comment"
-                                                required></textarea>
-                                        </div>
+                                            <div class="mb-4">
+                                                <label for="comment">Comment:</label>
+                                                <textarea class="w-full border rounded px-3 py-" name="comment" id="comment"
+                                                    required></textarea>
+                                            </div>
 
-                                        <button class="bg-blue-700 text-white px-2 rounded" type="submit">Submit Review</button>
-                                    </form>
+                                            <button class="bg-blue-700 text-white px-2 rounded" type="submit">Submit Review</button>
+                                        </form>
+                                    @endif
                                 @endif
                             @endif
                         @endauth

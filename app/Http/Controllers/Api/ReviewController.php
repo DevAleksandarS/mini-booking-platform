@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
+use App\Models\Reservation;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReviewController extends Controller
 {
@@ -20,12 +22,21 @@ class ReviewController extends Controller
             'comment' => 'required|string|max:1000',
         ]);
 
-        $existingReview = $facility->reviews()
+        $existing_review = $facility->reviews()
             ->where('user_id', auth()->id())
             ->first();
 
-        if ($existingReview) {
+        if ($existing_review) {
             return redirect()->back()->with('error', 'You have already added a review for this facility.');
+        }
+
+        $has_ended_reservation = Reservation::where('facility_id', $facility->id)
+            ->where('user_id', auth()->id())
+            ->whereDate('end_date', '<', Carbon::today())
+            ->exists();
+
+        if (!$has_ended_reservation) {
+            return redirect()->back()->with('error', 'You dont have any reservation that ended.');
         }
 
         $facility->reviews()->create([
