@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 Route::get('/', function () {
     $facilities = Facility::with('location');
@@ -48,6 +49,10 @@ Route::get('/', function () {
 Route::get('/facility/{id}', function ($id) {
     $facility = Facility::with('location')->findOrFail($id);
     $locations = Location::all();
+    $has_ended_reservation = Reservation::where('facility_id', $id)
+        ->where('user_id', auth()->id())
+        ->whereDate('end_date', '<', Carbon::today())
+        ->exists();
     $reviews = $facility->reviews()
         ->where('user_id', '!=', auth()->id())
         ->with('user')
@@ -57,7 +62,7 @@ Route::get('/facility/{id}', function ($id) {
         ->where('user_id', auth()->id())
         ->first();
 
-    return view('facility', compact('facility', 'locations', 'reviews', 'my_review'));
+    return view('facility', compact('facility', 'locations', 'reviews', 'my_review', 'has_ended_reservation'));
 })->name('facility');
 
 Route::get('/reservation/confirm/{id}/{token}', [ReservationController::class, 'confirm'])
