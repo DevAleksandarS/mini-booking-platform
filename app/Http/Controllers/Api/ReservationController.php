@@ -7,6 +7,7 @@ use App\Mail\ReservationCreatedMail;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Notifications\ReservationApproved;
+use App\Notifications\ReservationCanceled;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Mail;
@@ -98,6 +99,10 @@ class ReservationController extends Controller
             return redirect()->route('user.reservations')
                 ->with('error', 'You are not authorized to cancel this reservation.');
         }
+
+        $admins = User::where('role', 'admin')->get();
+
+        Notification::send($admins, new ReservationCanceled($reservation));
 
         $reservation->delete();
 
